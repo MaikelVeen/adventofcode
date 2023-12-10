@@ -13,14 +13,14 @@ const Void Tile = 0
 const Digit Tile = 1
 const Symbol Tile = 2
 
-type Grid map[image.Point]rune
+type Symbols map[image.Point]rune
 
-func (g Grid) TileAdjacentToSymbol(y, x int) bool {
+func (g Symbols) TileAdjacentToSymbol(point image.Point) bool {
 	for _, delta := range []image.Point{
 		{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1},
 	} {
 
-		if _, ok := g[image.Point{x, y}.Add(delta)]; ok {
+		if _, ok := g[point.Add(delta)]; ok {
 			return ok
 		}
 	}
@@ -28,18 +28,24 @@ func (g Grid) TileAdjacentToSymbol(y, x int) bool {
 }
 
 func SumPartNumbers(schematicLines []string) (sum int) {
-	grid := parseGrid(schematicLines)
-	regex := regexp.MustCompile(`(?m)[0-9]+`)
+	grid := parseSymbols(schematicLines)
+	parts := map[image.Point]int{}
 
 	for y, row := range schematicLines {
-		for _, match := range regex.FindAllStringIndex(row, -1) {
-			startPos := match[0]
-			endPos := match[1]
+		for _, match := range regexp.MustCompile(`(?m)[0-9]+`).FindAllStringIndex(row, -1) {
+			startPos, endPos := match[0], match[1]
+			value, _ := strconv.Atoi(row[startPos:endPos])
+			added := false
 
 			for x := startPos; x < endPos; x++ {
-				if grid.TileAdjacentToSymbol(y, x) {
-					value, _ := strconv.Atoi(row[startPos:endPos])
-					sum += value
+				point := image.Point{x, y}
+				parts[point] = value
+
+				if grid.TileAdjacentToSymbol(point) {
+					if !added {
+						sum += value
+						added = true
+					}
 					break
 				}
 			}
@@ -48,7 +54,7 @@ func SumPartNumbers(schematicLines []string) (sum int) {
 	return sum
 }
 
-func parseGrid(schematicLines []string) Grid {
+func parseSymbols(schematicLines []string) Symbols {
 	grid := map[image.Point]rune{}
 
 	for y, line := range schematicLines {
