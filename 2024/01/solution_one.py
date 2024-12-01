@@ -1,23 +1,19 @@
 def main():
-	with open('input.txt') as input:
-		a = []
-		b = []
-            
-		while line := input.readline():
-			parts = line.split() 
-			a.append(int(parts[0]))
-			b.append(int(parts[1]))
-		
-		a.sort()
-		b.sort()
-		distance(a,b)
+    with open('input.txt') as file:
+        a, b = zip(*[
+            (int(x), int(y)) 
+            for line in file
+            for x, y in [line.split()]
+        ])
+        
+        a, b = list(a), list(b)
+        a.sort()
+        b.sort()
+        
+        print(calculate_distance(a, b))  
 
-def distance(list_a, list_b):
-    distance = 0
-    for a, b in zip(list_a, list_b):
-        distance += abs(a - b)
-    print(distance)
-
+def calculate_distance(list_a, list_b):  
+    return sum(abs(a - b) for a, b in zip(list_a, list_b))
 
 if __name__ == "__main__":
     main()
