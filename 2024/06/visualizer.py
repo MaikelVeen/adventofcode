@@ -38,7 +38,7 @@ if __name__ == "__main__":
     current_pos = (0, 0)
     movement = (0, -1)  # Upwards starting position
     
-    with open("test.txt") as file:
+    with open("input.txt") as file:
         for y, line in enumerate(file):
             row = list(line.strip())
             grid.append(row)
@@ -62,4 +62,4 @@ if __name__ == "__main__":
                     grid[current_pos[1]][current_pos[0]] = "^"  # Still using ^ in grid but displaying as @
                     
             print_grid(grid)
-            time.sleep(0.001)
+            time.sleep(0.5)
